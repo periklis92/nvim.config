@@ -1,34 +1,34 @@
-local lsp = require('lsp-zero').preset({})
+local lsp_zero = require('lsp-zero')
 
-lsp.on_attach(function(client, bufnr)
-	-- see :help lsp-zero-keybindings
-	-- to learn the available actions
-	lsp.default_keymaps({ buffer = bufnr })
-	lsp.buffer_autoformat()
+lsp_zero.on_attach(function(client, bufnr)
+	lsp_zero.default_keymaps({ buffer = bufnr })
+	lsp_zero.buffer_autoformat()
 end)
 
--- (Optional) Configure lua language server for neovim
-require('lspconfig').lua_ls.setup(lsp.nvim_lua_ls())
-
-lsp.setup()
-
-local rt = require("rust-tools")
-
-rt.setup({
-	server = {
-		on_attach = function(_, bufnr)
-			-- Hover actions
-			vim.keymap.set("n", "<C-c>", rt.hover_actions.hover_actions, { buffer = bufnr })
-			-- Code action groups
-			vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
+require('mason').setup({})
+require('mason-lspconfig').setup({
+	ensure_installed = { 'tsserver', 'rust_analyzer' },
+	handlers = {
+		lsp_zero.default_setup,
+		lua_ls = function()
+			local lua_opts = lsp_zero.nvim_lua_ls()
+			require('lspconfig').lua_ls.setup(lua_opts)
 		end,
-	},
+	}
 })
 
 local cmp = require('cmp')
+local cmp_select = { behavior = cmp.SelectBehavior.Select }
+
 cmp.setup({
+	sources = {
+		{ name = 'path' },
+		{ name = 'nvim_lsp' },
+		{ name = 'nvim_lua' },
+	},
+	formatting = lsp_zero.cmp_format(),
 	mapping = cmp.mapping.preset.insert({
 		['<CR>'] = cmp.mapping.confirm({ select = false }),
 		['<C-Space>'] = cmp.mapping.complete()
-	})
+	}),
 })
