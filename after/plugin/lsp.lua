@@ -14,6 +14,17 @@ require('mason-lspconfig').setup({
 			local lua_opts = lsp_zero.nvim_lua_ls()
 			require('lspconfig').lua_ls.setup(lua_opts)
 		end,
+		rust_analyzer = function()
+			local rust_tools = require('rust-tools')
+			rust_tools.setup({
+				server = {
+					on_attach = function(client, bufnr)
+						vim.keymap.set('n', '<leader>ca', rust_tools.hover_actions.hover_actions,
+							{ buffer = bufnr })
+					end
+				}
+			})
+		end
 	}
 })
 

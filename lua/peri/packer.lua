@@ -25,6 +25,7 @@ return require('packer').startup(function(use)
 
 	use('nvim-treesitter/nvim-treesitter', { run = ':TSUpdate' })
 	use('nvim-treesitter/playground')
+	use('simrat39/rust-tools.nvim')
 
 	use {
 		'VonHeikemen/lsp-zero.nvim',
